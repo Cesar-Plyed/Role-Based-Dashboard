@@ -1,0 +1,199 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # BASE DE DATOS - PostgreSQL
+  # Se usa Alps version para menor tamaño y más rápido
+  # ============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: dashboard_db
+    environment:
+      POSTGRES_USER: root       # Usuario root de la BD
+      POSTGRES_PASSWORD: root   # Contrasena root
+    ports:
+      - "5432:5432"             # Mapeo de puertos Host:Contenedor
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql # Script inicial
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # DISCOVERY SERVICE (Eureka) - Puerto 8761
+  # Registra todos los microservicios activos para auto-discovery
+  # ============================================================================
+  discovery-service:
+    build: ./backend/discovery-service
+    container_name: ms_discovery
+    environment:
+      JAVA_OPTS: "-Xmx512m -Xms256m"
+      SPRING_PROFILES_ACTIVE: "docker"
+    ports:
+      - "8761:8761"
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/eureka/apps"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ============================================================================
+  # API GATEWAY - Puerto 8080
+  # Punto de entrada único. Enruta tráfico a los microservicios
+  # ============================================================================
+  gateway-service:
+    build: ./backend/gateway-service
+    container_name: ms_gateway
+    environment:
+      JAVA_OPTS: "-Xmx512m -Xms256m"
+      SPRING_PROFILES_ACTIVE: "docker"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service:8761/eureka/"
+    ports:
+      - "8080:8080"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # AUTH SERVICE - Puerto 8081
+  # Autenticación, gestión de usuarios, y generación de tokens JWT
+  # ============================================================================
+  auth-service:
+    build: ./backend/auth-service
+    container_name: ms_auth
+    environment:
+      JAVA_OPTS: "-Xmx768m -Xms512m"
+      SPRING_PROFILES_ACTIVE: "docker"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/auth_db"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "root"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service:8761/eureka/"
+      JWT_SECRET: "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # PRODUCT SERVICE - Puerto 8082
+  # Gestión del catálogo de productos e inventario
+  # ============================================================================
+  product-service:
+    build: ./backend/product-service
+    container_name: ms_product
+    environment:
+      JAVA_OPTS: "-Xmx768m -Xms512m"
+      SPRING_PROFILES_ACTIVE: "docker"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/product_db"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "root"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service:8761/eureka/"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # CART SERVICE - Puerto 8083
+  # Gestión del carrito de compras con comunicación inter-servicios (Feign)
+  # ============================================================================
+  cart-service:
+    build: ./backend/cart-service
+    container_name: ms_cart
+    environment:
+      JAVA_OPTS: "-Xmx768m -Xms512m"
+      SPRING_PROFILES_ACTIVE: "docker"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/cart_db"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "root"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service:8761/eureka/"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================================================
+  # FRONTEND (React/Nginx) - Puerto 3000
+  # Aplicación frontend servida por Nginx
+  # ============================================================================
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: ms_frontend
+  #   environment:
+  #     - REACT_APP_API_BASE_URL=http://localhost:8080/api
+  #   ports:
+  #     - "3000:80"           # Nginx en puerto 80 expuesto al 3000
+  #   depends_on:
+  #     - gateway-service
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+# ============================================================================
+# VOLÚMENES - Persistencia de datos
+# ============================================================================
+volumes:
+  db_data:
+    driver: local
+
+# ============================================================================
+# REDES - Comunicación entre contenedores
+# ============================================================================
+networks:
+  app-network:
+    driver: bridge           # Red tipo puente para comunicar contenedores
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

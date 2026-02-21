@@ -1,0 +1,16 @@
+# Ignorar archivos que no son necesarios en Docker
+target/
+.git/
+.gitignore
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+.vscode/
+README.md
