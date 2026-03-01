@@ -6,8 +6,6 @@
 **Spring Boot:** 4.0.2  
 **Docker:** Multi-stage Alpine optimizado
 
-> **NOTA:** La documentación completa se ha movido a: `C:\Users\PC\Dev-Projects\AI-DIMP\Role-Based-Dashboard\Backend`
-
 ---
 
 ## 📋 Descripción
@@ -50,7 +48,6 @@ Aplicación de **microservicios completa** con:
 
 ### Documentación
 
-- ✅ Documentación completa movida a: `../../AI-DIMP/Role-Based-Dashboard/Backend`
 - ✅ 20+ guías y referencias
 - ✅ Troubleshooting avanzado
 - ✅ Verificación checklist
