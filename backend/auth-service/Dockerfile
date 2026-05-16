@@ -12,7 +12,7 @@ COPY .mvn .mvn
 COPY src ./src
 
 # Compilar aplicación
-RUN ./mvnw clean package -DskipTests
+RUN chmod +x mvnw && ./mvnw -B clean package -DskipTests
 
 # Runtime Stage - Ejecutar aplicación
 FROM eclipse-temurin:17-jre-alpine
