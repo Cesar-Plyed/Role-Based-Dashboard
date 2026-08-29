@@ -145,7 +145,7 @@ Nginx:               alpine
 ### Frontend
 
 ```javascript
-Framework:           React
+Framework:           Angular
 Language:            TypeScript
 Build:               Node.js 25-alpine
 Runtime:             Nginx alpine
