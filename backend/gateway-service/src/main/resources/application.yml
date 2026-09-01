@@ -27,8 +27,6 @@ spring:
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/api/products/**
-          filters:
-            - RewritePath=/api/products/(?<path>.*), /$\{path}
 
         - id: cart-service
           uri: lb://CART-SERVICE
