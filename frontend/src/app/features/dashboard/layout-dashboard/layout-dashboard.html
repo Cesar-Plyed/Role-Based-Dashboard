@@ -1,0 +1,66 @@
+<div class="min-h-screen flex bg-[#F5F6F8]">
+
+  <!-- Sidebar -->
+  <aside class="w-64 shrink-0 hidden md:flex flex-col bg-[#171B21] text-[#C6CCD3]">
+    <div class="flex items-center gap-2 px-6 h-16 border-b border-white/10">
+      <div class="w-7 h-7 rounded-md" [style.background]="roleAccent()"></div>
+      <span class="font-[Sora] text-white text-base tracking-tight">Panel Interno</span>
+    </div>
+
+    <nav class="flex-1 px-3 py-5 space-y-1">
+      @for (item of navItems(); track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="bg-white/10 text-white"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-white/5 hover:text-white transition-colors"
+        >
+          <span class="w-1.5 h-1.5 rounded-full" [style.background]="roleAccent()"></span>
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="px-3 py-5 border-t border-white/10">
+      <button
+        (click)="logout()"
+        class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm text-[#C6CCD3] border border-white/10 hover:bg-white/5 hover:text-white transition-colors"
+      >
+        Cerrar sesion
+      </button>
+    </div>
+  </aside>
+
+  <!-- Contenido -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- Topbar -->
+    <header class="h-16 flex items-center justify-between px-6 border-b border-[#E4E7EB] bg-white">
+      <div class="flex items-center gap-2">
+        <span
+          class="text-xs font-medium px-2.5 py-1 rounded-full text-white"
+          [style.background]="roleAccent()"
+        >
+          {{ roleLabel() }}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="text-right hidden sm:block">
+          <p class="text-sm text-[#171B21] leading-tight">{{ user()?.nombre }}</p>
+          <p class="text-xs text-[#8A929B] leading-tight">{{ user()?.email }}</p>
+        </div>
+        <div
+          class="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-medium"
+          [style.background]="roleAccent()"
+        >
+          {{ (user()?.nombre || '?').charAt(0) }}
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-6 sm:p-8">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

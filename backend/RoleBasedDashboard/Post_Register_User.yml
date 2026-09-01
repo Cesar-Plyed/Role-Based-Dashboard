@@ -1,0 +1,23 @@
+info:
+  name: Post_Register_User
+  type: http
+
+http:
+  method: POST
+  url: http://localhost:8080/api/auth/register
+  body:
+    type: json
+    data: |-
+      {
+        "username": "Pablito 123",
+        "password": "Arroz123",
+        "role": "ADMIN"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+​

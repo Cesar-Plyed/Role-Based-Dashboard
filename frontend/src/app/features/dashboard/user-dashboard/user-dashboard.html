@@ -1,0 +1,19 @@
+<h1 class="font-[Sora] text-2xl text-[#171B21] mb-1">Mi espacio</h1>
+<p class="text-sm text-[#5B6570] mb-8">Tus tareas y actividad reciente.</p>
+
+<div class="grid sm:grid-cols-3 gap-4 mb-8">
+  @for (poduct of poducts; track poduct.name) {
+    <div class="bg-white rounded-xl border border-[#E4E7EB] p-5">
+      <p class="text-xl text-[#8A929B] mb-2">{{ poduct.name }}</p>
+      <p class="text-xs text-[#8A929B] mb-2">{{ poduct.price }}</p>
+      <p class="font-[Sora] text-2xl text-[#171B21]">{{ poduct.stock }}</p>
+    </div>
+  }
+</div>
+
+<div class="bg-white rounded-xl border border-[#E4E7EB] p-6">
+  <h2 class="text-sm font-medium text-[#171B21] mb-4">Tareas pendientes</h2>
+  <p class="text-sm text-[#8A929B]">
+    Aqui se listaran tus tareas asignadas una vez conectado el endpoint correspondiente.
+  </p>
+</div>

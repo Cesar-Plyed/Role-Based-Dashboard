@@ -27,82 +27,93 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "cart_items")
 public class CartItem {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    // ID del producto (referencia a product-service)
+
+    // ID del producto y usuario (referencia a product-service y auth-service)
     private Long productId;
-    
+    private Long userId;
+
     // Datos desnormalizados del producto para facilitar consultas
     private String productName;
-    private Double price;      // Precio unitario
-    private Integer quantity;  // Cantidad en el carrito
-    private Double total;      // Total = price * quantity
-    
+    private Double price; // Precio unitario
+    private Integer quantity; // Cantidad en el carrito
+    private Double total; // Total = price * quantity
+
     // Constructores
     public CartItem() {
     }
-    
-    public CartItem(Long id, Long productId, String productName, Double price, Integer quantity, Double total) {
+
+    public CartItem(Long id, Long productId, Long userId, String productName, Double price, Integer quantity,
+            Double total) {
         this.id = id;
+        this.userId = userId;
         this.productId = productId;
         this.productName = productName;
         this.price = price;
         this.quantity = quantity;
         this.total = total;
     }
-    
+
     // Getters y Setters
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public Long getProductId() {
         return productId;
     }
-    
+
     public void setProductId(Long productId) {
         this.productId = productId;
     }
-    
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public String getProductName() {
         return productName;
     }
-    
+
     public void setProductName(String productName) {
         this.productName = productName;
     }
-    
+
     public Double getPrice() {
         return price;
     }
-    
+
     public void setPrice(Double price) {
         this.price = price;
     }
-    
+
     public Integer getQuantity() {
         return quantity;
     }
-    
+
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
-    
+
     public Double getTotal() {
         return total;
     }
-    
+
     public void setTotal(Double total) {
         this.total = total;
     }
-    
+
     @Override
     public String toString() {
         return "CartItem{" +

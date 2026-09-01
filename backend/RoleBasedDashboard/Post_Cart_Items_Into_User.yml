@@ -1,0 +1,24 @@
+info:
+  name: Post_Cart_Items_Into_User
+  type: http
+
+http:
+  method: POST
+  url: http://localhost:8080/api/cart/2/items
+  headers:
+    - name: Authorization
+      value: eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiJQYWJsaXRvIDEyMyIsImlhdCI6MTc4ODIxNDc4NCwiZXhwIjoxNzg4MjU3OTg0fQ.kLexDUFXAc0pNjCZjMj_eheC3p_VYcLGK36pMCI520ZlEGyOoaqGycNLMt_clBYozV97dDXMJNsLZYDRBeXpsQ
+  body:
+    type: json
+    data: |-
+      {
+        "productId": 1,
+        "quantity": 3
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

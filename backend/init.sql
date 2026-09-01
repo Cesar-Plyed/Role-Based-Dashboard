@@ -10,18 +10,19 @@ CREATE DATABASE cart_db;
 \connect auth_db
 
 CREATE TABLE IF NOT EXISTS users (
-	id SERIAL PRIMARY KEY,
-	username VARCHAR(100) NOT NULL UNIQUE,
-	password VARCHAR(255) NOT NULL,
-	role VARCHAR(50) NOT NULL,
-	created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(100) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(50) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
--- Datos de ejemplo: usuarios
+-- Datos de ejemplo: usuarios (passwords hasheados con BCrypt)
+-- admin -> changeme | alice -> password1 | bob -> password2
 INSERT INTO users (username, password, role) VALUES
-	('admin', 'changeme', 'ADMIN'),
-	('alice', 'password1', 'USER'),
-	('bob', 'password2', 'USER')
+        ('admin', '$2b$10$b1.8a.lkt5LOD/sXXSFtLe0s/frEi4NZeZi3gFbHh6BRf3KIpkAvC', 'ADMIN'),
+        ('alice', '$2b$10$rZoBjGTKsOgoCnTG1dcbb.z3rXISkqS243ZuVVh4PAMh/4EmDBuji', 'USER'),
+        ('bob',   '$2b$10$LuRzBwtIVuHvxPDRs0FZAeyBoTjpdCOSo7.s1Z/TLS7IEjooHOAiS', 'USER')
 ON CONFLICT (username) DO NOTHING;
 
 -- --------------------------------------------------
@@ -104,46 +105,26 @@ FROM (
 WHERE o.id = sub.order_id;
 
 -- --------------------------------------------------
--- cart_db: carrito y items de carrito
--- Un carrito puede pertenecer a un usuario (user_id), un usuario puede tener 0 o 1 carrito.
+-- cart_db: items de carrito
 -- --------------------------------------------------
 \connect cart_db
 
-CREATE TABLE IF NOT EXISTS carts (
-	id SERIAL PRIMARY KEY,
-	user_id INTEGER UNIQUE,
-	created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-
 CREATE TABLE IF NOT EXISTS cart_items (
 	id SERIAL PRIMARY KEY,
-	cart_id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
 	product_id INTEGER NOT NULL,
 	product_name VARCHAR(200),
 	price NUMERIC(10,2) NOT NULL,
 	quantity INTEGER NOT NULL DEFAULT 1,
-	total NUMERIC(12,2) NOT NULL,
-	added_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+	total NUMERIC(12,2) NOT NULL
 );
 
--- Crear un carrito para el usuario 'alice' (user_id = 2)
-INSERT INTO carts (user_id) VALUES (2) ON CONFLICT (id) DO NOTHING;
+-- Índice para acelerar findByUserId()
+CREATE INDEX IF NOT EXISTS idx_cart_items_user_id ON cart_items (user_id);
 
--- Obtener el id del carrito insertado
-DO $$
-DECLARE cid INTEGER;
-BEGIN
-	SELECT id INTO cid FROM carts WHERE user_id = 2 LIMIT 1;
-	IF cid IS NOT NULL THEN
-		-- Añadir items al carrito: 2 x Auriculares, 1 x Teclado
-		INSERT INTO cart_items (cart_id, product_id, product_name, price, quantity, total)
-			VALUES (cid, 2, 'Auriculares', 79.90, 2, 159.80)
-		ON CONFLICT (id) DO NOTHING;
-
-		INSERT INTO cart_items (cart_id, product_id, product_name, price, quantity, total)
-			VALUES (cid, 4, 'Teclado', 89.00, 1, 89.00)
-		ON CONFLICT (id) DO NOTHING;
-	END IF;
-END$$;
-
--- Fin del script de inicialización
+-- Datos de ejemplo: carrito de alice (user_id = 2)
+-- 2 x Auriculares, 1 x Teclado
+INSERT INTO cart_items (user_id, product_id, product_name, price, quantity, total) VALUES
+	(2, 2, 'Auriculares', 79.90, 2, 159.80),
+	(2, 4, 'Teclado', 89.00, 1, 89.00)
+ON CONFLICT (id) DO NOTHING;

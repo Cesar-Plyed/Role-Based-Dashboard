@@ -1,0 +1,3 @@
+internal:
+  api:
+    key: ${INTERNAL_API_KEY:un-secreto-largo-y-random}

@@ -1,0 +1,22 @@
+info:
+  name: Post_Product
+  type: http
+
+http:
+  method: POST
+  url: http://localhost:8080/api/products
+  body:
+    type: json
+    data: |-
+      {
+        "name":"Telefono Poco F6",
+        "price":"10000.00",
+        "stock":"6"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

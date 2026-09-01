@@ -1,91 +1,171 @@
-# Role-Based Dashboard - Backend
+# Backend documentation
 
-**Estado:** **PRODUCTION READY**  
-**Última actualización:** 5 de Febrero, 2026  
-**Java Version:** 25 LTS  
-**Spring Boot:** 4.0.2  
-**Docker:** Multi-stage Alpine optimizado
+This folder contains the backend side of the Role-Based Dashboard project. The backend is a set of Spring Boot microservices coordinated through Eureka and a gateway.
 
----
+## Project purpose
 
-## Descripción
+The backend provides:
 
-Aplicación de **microservicios completa** con:
+- Authentication and user management
+- Role-based authorization
+- Product catalog operations
+- Cart operations
+- Service discovery and routing
+- Dockerized local development environment
 
-- 5 servicios backend Java 25
-- Frontend React integrado (../frontend)
-- Orquestación con Docker Compose
-- Autenticación JWT
-- Service Discovery (Eureka)
-- PostgreSQL con 3 databases
-- **0 errores de compilación**
+## Service structure
 
----
+```text
+backend/
+├── auth-service/
+├── cart-service/
+├── discovery-service/
+├── gateway-service/
+├── product-service/
+├── RoleBasedDashboard/
+├── init.sql
+├── README.md
+├── docker-compose.yml
+└── .gitignore
+```
 
-## Características
+## Services
 
-### Backend (Java 25)
+### auth-service
 
-- **Auth Service** (:8081) - JWT + BCrypt
-- **Product Service** (:8082) - Catálogo
-- **Cart Service** (:8083) - Carrito
-- **Gateway Service** (:8080) - Router API
-- **Discovery Service** (:8761) - Eureka Registry
+Responsible for authentication, registration, token creation and user validation.
 
-### DevOps
+Main responsibilities:
 
-- Docker multi-stage optimizado (~200MB cada servicio)
-- docker-compose.yml con 7 servicios
-- Health checks en todos
-- Networking automático
-- Persistencia de datos BD
+- user registration
+- login
+- JWT generation
+- password validation or hashing
+- user-role handling
 
-### Frontend (React)
+Default port:
 
-- Node.js 25-alpine builder
-- Nginx alpine runtime
-- Integrado en docker-compose
+- 8081
 
-### Documentación
+### product-service
 
-- 20+ guías y referencias
-- Troubleshooting avanzado
-- Verificación checklist
-- Diagramas de arquitectura
+Responsible for product management and catalog access.
 
----
+Main responsibilities:
 
-## Inicio Rápido
+- CRUD of products
+- product listing
+- product metadata handling
+- inventory-related operations
 
-### Ejecutar (30 segundos)
+Default port:
+
+- 8082
+
+### cart-service
+
+Responsible for shopping cart logic.
+
+Main responsibilities:
+
+- add, remove and list cart items
+- user cart management
+- communication with other services when needed
+
+Default port:
+
+- 8083
+
+### gateway-service
+
+Acts as the entry point for the frontend and all external requests.
+
+Main responsibilities:
+
+- route requests to the correct microservice
+- expose a single API endpoint
+- centralize access rules
+- simplify frontend integration
+
+Default port:
+
+- 8080
+
+### discovery-service
+
+Runs Spring Cloud Netflix Eureka.
+
+Main responsibilities:
+
+- register all services
+- enable service discovery
+- allow internal communication between services
+
+Default port:
+
+- 8761
+
+## Infrastructure
+
+The project uses PostgreSQL and Docker Compose to run the application locally.
+
+### Databases
+
+The `docker-compose.yml` file at the repository root configures PostgreSQL and each service with its own database or environment values.
+
+Databases used in the project include:
+
+- auth_db
+- product_db
+- cart_db
+
+## Startup commands
+
+From the root of the repository:
 
 ```bash
-cd backend
-docker-compose up -d
+docker compose up --build -d
 ```
 
-### Esperar (5-8 minutos)
+To inspect the running containers:
 
 ```bash
-docker-compose ps  # Verificar que todos estén UP/healthy
+docker compose ps
 ```
 
-### Acceder
+To check logs:
 
-```
-Frontend:   http://localhost:3000
-Gateway:    http://localhost:8080
-Auth:       http://localhost:8081
-Product:    http://localhost:8082
-Cart:       http://localhost:8083
-Discovery:  http://localhost:8761
+```bash
+docker compose logs -f
 ```
 
----
+To stop the services:
 
-## Testing Rápido
+```bash
+docker compose down
+```
 
-### Registrar usuario
+## Local service execution
+
+Each service can also be run individually using Maven.
+
+Example:
+
+```bash
+cd backend/auth-service
+./mvnw clean package
+java -jar target/auth-service-0.0.1-SNAPSHOT.jar
+```
+
+If permission errors happen with Maven wrapper scripts, run:
+
+```bash
+chmod +x mvnw
+```
+
+## API access examples
+
+### Register user
 
 ```bash
 curl -X POST http://localhost:8080/api/auth/register \
@@ -93,7 +173,7 @@ curl -X POST http://localhost:8080/api/auth/register \
   -d '{"username":"user1","password":"Pass123!"}'
 ```
 
-### Login (obtener JWT)
+### Login
 
 ```bash
 curl -X POST http://localhost:8080/api/auth/login \
@@ -101,7 +181,7 @@ curl -X POST http://localhost:8080/api/auth/login \
   -d '{"username":"user1","password":"Pass123!"}'
 ```
 
-### Obtener productos
+### Product list
 
 ```bash
 curl http://localhost:8080/api/products
@@ -113,100 +193,62 @@ curl http://localhost:8080/api/products
 curl http://localhost:8080/actuator/health
 ```
 
----
+## Typical architecture
 
-## Estructura del Proyecto
-
-```
-backend/
-├── docker-compose.yml              ← Configuración principal (ACTUALIZADO)
-├── docker-compose.prod.yml         ← Para producción
-├── README.md                        ← Este archivo
-├── src/                            ← Código fuente
-│
-├── ... (Documentación movida a: ../../AI-DIMP/Role-Based-Dashboard/Backend)
-│
-├── auth-service/                   ← Autenticación
-│   ├── Dockerfile                  Java 25 Alpine
-│   ├── .dockerignore               Optimizado
-│   ├── pom.xml                     Actualizado
-│   └── src/main/java/...
-│
-├── product-service/                ← Productos
-│   ├── Dockerfile                  Java 25 Alpine
-│   ├── .dockerignore               Optimizado
-│   ├── pom.xml                     Actualizado
-│   └── src/main/java/...
-│
-├── cart-service/                   ← Carrito
-│   ├── Dockerfile                  Java 25 Alpine
-│   ├── .dockerignore               Optimizado
-│   ├── pom.xml                     Actualizado
-│   └── src/main/java/...
-│
-├── gateway-service/                ← API Gateway
-│   ├── Dockerfile                  Java 25 Alpine
-│   ├── .dockerignore               Optimizado
-│   └── src/main/java/...
-│
-├── discovery-service/              ← Eureka Registry
-│   ├── Dockerfile                  Java 25 Alpine
-│   ├── .dockerignore               Optimizado
-│   └── src/main/java/...
-│
-└── init.sql                        ← (Opcional) SQL inicial
+```text
+Browser / Frontend
+        |
+        v
+Gateway Service (8080)
+        |
+        +--> Auth Service (8081)
+        +--> Product Service (8082)
+        +--> Cart Service (8083)
+        |
+        v
+Discovery Service (8761)
+        |
+        v
+PostgreSQL (5432)
 ```
 
----
+## Security considerations
 
-## Arquitectura
+The backend is prepared for local and development usage, but for production it should include:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                   USUARIO (React)                       │
-│              http://localhost:3000                      │
-└───────────────────────┬─────────────────────────────────┘
-                        │
-                        ▼
-        ┌───────────────────────────────┐
-        │    API GATEWAY (:8080)        │
-        │  Spring Cloud Gateway         │
-        │  + CORS + Routing             │
-        └────┬──────────────┬───────────┘
-             │              │
-      /api/auth      /api/products
-      /api/cart            │
-             │              │
-             ▼              ▼
-        ┌─────────┐  ┌──────────────┐
-        │  AUTH   │  │  PRODUCT     │
-        │ :8081   │  │  :8082       │
-        └────┬────┘  └──────┬───────┘
-             │               │
-             │        Feign Client
-             │               │
-        ┌────┴───────────────┤
-        │                    ▼
-        │            ┌─────────┐
-        │            │  CART   │
-        │            │ :8083   │
-        │            └────┬────┘
-        │                 │
-        └────────┬────────┘
-                 │
-        ┌────────▼──────────────┐
-        │   DISCOVERY (Eureka)  │
-        │      :8761            │
-        │   Service Registry    │
-        └────────┬──────────────┘
-                 │
-        ┌────────▼──────────────┐
-        │  PostgreSQL 15        │
-        │  :5432                │
-        │  ├─ auth_db           │
-        │  ├─ product_db        │
-        │  └─ cart_db           │
-        └───────────────────────┘
+- stronger environment variable management
+- HTTPS/TLS configuration
+- secret management
+- CORS restrictions
+- rate limiting
+- request validation and logging policies
+
+## Troubleshooting
+
+### Service not starting
+
+Check the logs:
+
+```bash
+docker compose logs <service-name>
 ```
 
----
+### Database connection errors
+
+Verify that PostgreSQL is running and the service environment variables match the Docker database names.
+
+### Maven wrapper permission errors
+
+Run:
+
+```bash
+chmod +x mvnw
+```
+
+### Port conflict
+
+If a port is already in use, change the port mapping in the root `docker-compose.yml` file.
+
+## Notes
+
+This backend is designed to work as part of a full-stack application together with the Angular frontend in the sibling `frontend/` folder. The root repository README should be used as the main project overview, while this file is the backend-focused reference.

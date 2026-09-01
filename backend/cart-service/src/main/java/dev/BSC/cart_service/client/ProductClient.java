@@ -8,7 +8,7 @@ import dev.BSC.cart_service.dto.ProductDTO;
 
 @FeignClient(name = "product-service") // Nombre exacto del otro servicio en Eureka
 public interface ProductClient {
-    
+
     @GetMapping("/api/products/{id}")
     ProductDTO getProductById(@PathVariable("id") Long id);
 }

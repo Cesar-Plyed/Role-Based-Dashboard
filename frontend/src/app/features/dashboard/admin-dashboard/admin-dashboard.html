@@ -1,0 +1,30 @@
+<h1 class="font-[Sora] text-2xl text-[#171B21] mb-1">Resumen de administracion</h1>
+<p class="text-sm text-[#5B6570] mb-8">Vista general del sistema y sus usuarios.</p>
+
+<div class="grid sm:grid-cols-3 gap-4 mb-8">
+  @for (usuario of usuarios; track usuario.username) {
+    <div class="bg-white rounded-xl border border-[#E4E7EB] p-5">
+      <p class="text-xs text-[#8A929B] mb-2">{{ usuario.username }}</p>
+      <p class="font-[Sora] text-2xl text-[#171B21]">{{ usuario.role }}</p>
+    </div>
+  }
+</div>
+
+<div class="grid sm:grid-cols-3 gap-4 mb-8">
+  @for (poduct of poducts; track poduct.name) {
+    <div class="bg-white rounded-xl border border-[#E4E7EB] p-5">
+      <p class="text-xl text-[#8A929B] mb-2">{{ poduct.name }}</p>
+      <p class="text-xs text-[#8A929B] mb-2">{{ poduct.price }}</p>
+      <p class="font-[Sora] text-2xl text-[#171B21]">{{ poduct.stock }}</p>
+    </div>
+  }
+</div>
+
+<div class="bg-white rounded-xl border border-[#E4E7EB] p-6">
+  <h2 class="text-sm font-medium text-[#171B21] mb-4">Que puedes hacer aqui</h2>
+  <ul class="text-sm text-[#5B6570] space-y-2 list-disc list-inside">
+    <li>Gestionar usuarios y asignar roles (Admin, Supervisor, Usuario, Proveedor).</li>
+    <li>Revisar la actividad general del sistema.</li>
+    <li>Configurar parametros globales de la plataforma.</li>
+  </ul>
+</div>

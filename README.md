@@ -1,152 +1,142 @@
-# 🚀 Role-Based Dashboard - Backend
+# Role-Based Dashboard
 
-**Estado:** ✅ **PRODUCTION READY**  
-**Última actualización:** 5 de Febrero, 2026  
-**Java Version:** 25 LTS  
-**Spring Boot:** 4.0.2
+This project combines an Angular frontend with a Spring Boot microservices backend for a role-based dashboard application.
 
-# Role-Based Dashboard — Backend
+## Overview
 
-Resumen profesional del backend del proyecto Role-Based Dashboard. Este repositorio contiene los microservicios Java, la orquestación por Docker Compose y los scripts de inicialización de base de datos.
+The solution is structured in two main parts:
 
-## Contenido y propósito
+- Frontend: Angular application in `frontend/`
+- Backend: Java microservices in `backend/`
+- Infrastructure: Docker Compose and PostgreSQL in the root of the repository
 
-- Servicios backend desarrollados con Spring Boot.
-- Orquestación y despliegue mediante Docker Compose.
-- Bases de datos gestionadas con PostgreSQL y script de inicialización en `init.sql`.
+## Repository structure
 
-Este README describe la estructura del repositorio, requisitos, pasos para construir y ejecutar el entorno, y comandos comunes de diagnóstico.
-
-## Estructura principal
-
-- `auth-service/` — Servicio de autenticación (puerto 8081)
-- `product-service/` — Servicio de catálogo (puerto 8082)
-- `cart-service/` — Servicio de carrito (puerto 8083)
-- `gateway-service/` — API Gateway (puerto 8080)
-- `discovery-service/` — Eureka Service Registry (puerto 8761)
-- `init.sql` — Script opcional para inicializar bases de datos
-- `docker-compose.yml` — Orquestación local de los servicios
-
-## Requisitos
-
-- Docker 20.x o superior
-- Docker Compose 1.29+ (o la versión incluida en Docker Desktop)
-- JDK 17 (solo si se compila localmente fuera de Docker)
-
-Recomendación: ejecutar la plataforma mediante `docker-compose` para evitar diferencias entre entornos.
-
-## Construcción y ejecución (Docker)
-
-Desde la raíz del repositorio:
-
-```bash
-docker-compose build --no-cache
-docker-compose up -d
+```text
+Role-Based-Dashboard/
+├── backend/
+│   ├── README.md
+│   ├── auth-service/
+│   ├── cart-service/
+│   ├── discovery-service/
+│   ├── gateway-service/
+│   ├── product-service/
+│   ├── init.sql
+│   └── RoleBasedDashboard/
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   └── angular.json
+├── docker-compose.yml
+├── README.md
+└── .gitignore
 ```
 
-Verificar estado:
-
-```bash
-docker-compose ps
-docker-compose logs -f
-```
-
-Puntos finales principales:
-
-- Frontend: http://localhost:3000
-- Gateway: http://localhost:8080
-- Auth: http://localhost:8081
-- Product: http://localhost:8082
-- Cart: http://localhost:8083
-- Discovery (Eureka): http://localhost:8761
-
-## Ejecutar un servicio localmente (opcional)
-
-Si desea ejecutar un servicio de forma individual fuera de Docker, desde la carpeta del servicio:
-
-```bash
-./mvnw clean package
-java -jar target/<nombre-del-servicio>.jar
-```
-
-Nota: el script `mvnw` puede no ser ejecutable después de copiar archivos entre sistemas. En los Dockerfiles del proyecto se incluye `chmod +x mvnw` antes de invocarlo para garantizar permisos adecuados.
-
-## Inicialización de la base de datos
-
-El archivo `init.sql` contiene la creación de esquemas y datos mínimos para desarrollo. Cuando use `docker-compose`, revise las variables de entorno en `docker-compose.yml` para confirmar nombres de base de datos y credenciales.
-
-## Comandos útiles
-
-- Iniciar todo: `docker-compose up -d`
-- Reconstruir: `docker-compose up -d --build`
-- Detener: `docker-compose down`
-- Eliminar volúmenes y reconstruir: `docker-compose down -v && docker-compose up -d --build`
-- Ver logs: `docker-compose logs -f`
-
-## Notas sobre permisos y problemas comunes
-
-- Error durante `./mvnw`: si aparece `permission denied` o exit code 126, asegúrese de que el archivo `mvnw` sea ejecutable. En los Dockerfiles se aplica `chmod +x mvnw` para resolverlo.
-- Puertos en uso: cierre procesos locales que ocupen los puertos configurados o ajuste los puertos en `docker-compose.yml`.
-- Servicios unhealthy: revisar logs del servicio `docker-compose logs <service>`.
-
-## Diagnóstico rápido
-
-Comandos de verificación:
-
-```bash
-docker-compose ps
-curl http://localhost:8080/actuator/health
-curl http://localhost:8761/eureka/apps
-```
-
-## Contribuciones y próximos pasos
-
-Para contribuir o ejecutar pruebas locales:
-
-1. Abrir un issue describiendo el cambio propuesto.
-2. Crear una rama con la convención `feature/<descripción>`.
-3. Enviar pull request con pruebas y descripción clara.
-
-Próximos elementos planificados:
-
-- Hardening de seguridad para producción (TLS, gestión de secretos)
-- Instrumentación y métricas (Prometheus/Grafana)
-- Pipeline CI/CD para build y pruebas
-
-## Contacto
-
-Para consultas técnicas, abra un issue en este repositorio indicando el servicio y los pasos para reproducir el problema.
-
-## 💾 Tecnologías Utilizadas
-
-### Backend
-
-```java
-Java:                25 LTS (JavaSE-25 LTS Terminal)
-Spring Boot:         4.0.2
-Spring Cloud:        2025.1.0
-Spring Data JPA:     Latest
-Spring Security:     Latest
-JWT:                 JJWT 0.12.3 (modern API)
-Build tool:          Maven 3.9+
-```
-
-### DevOps
-
-```java
-Docker:              Latest
-Docker Compose:      3.8+
-Base images:         eclipse-temurin:25 (Alpine)
-PostgreSQL:          15-alpine
-Node.js:             25-alpine
-Nginx:               alpine
-```
+## Technology stack
 
 ### Frontend
 
-```javascript
-Framework:           Angular
-Language:            TypeScript
-Build:               Node.js 25-alpine
-Runtime:             Nginx alpine
+- Angular 22
+- TypeScript
+- Reactive forms
+- Angular Router
+- Tailwind CSS
+
+### Backend
+
+- Java 17
+- Spring Boot
+- Spring Cloud Gateway
+- Eureka Service Discovery
+- PostgreSQL
+- JWT authentication
+- Docker Compose
+
+## Main features
+
+- Authentication with username/password
+- Role-based access control
+- Multi-role dashboard flow: ADMIN, SUPERVISOR, USER, PROVEEDOR
+- Gateway routing for microservices
+- Isolation between services and databases
+- Local development with Docker
+
+## Quick start
+
+### 1. Start the backend and infrastructure
+
+From the repository root:
+
+```bash
+docker compose up --build -d
 ```
+
+This starts:
+
+- PostgreSQL
+- Discovery Service
+- Gateway Service
+- Auth Service
+- Product Service
+- Cart Service
+
+### 2. Start the frontend
+
+From the frontend folder:
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+The Angular app will run in development mode, usually on:
+
+- http://localhost:4200
+
+## Services and ports
+
+- Frontend: http://localhost:4200
+- Gateway: http://localhost:8080
+- Auth service: http://localhost:8081
+- Product service: http://localhost:8082
+- Cart service: http://localhost:8083
+- Eureka: http://localhost:8761
+- PostgreSQL: localhost:5432
+
+## Development notes
+
+- The detailed backend documentation is in [backend/README.md](backend/README.md).
+- The frontend documentation is in the Angular app structure under `frontend/src` and configuration files such as `angular.json` and `package.json`.
+- The root README is intended as a project overview and quick-start guide.
+
+## Common commands
+
+### Stop the project
+
+```bash
+docker compose down
+```
+
+### Rebuild containers
+
+```bash
+docker compose up --build -d
+```
+
+### Check services
+
+```bash
+docker compose ps
+docker compose logs -f
+```
+
+## Troubleshooting
+
+- If a port is already in use, change the port mapping in `docker-compose.yml`.
+- If a service does not become healthy, check the logs with `docker compose logs <service-name>`.
+- If Maven scripts are not executable, run `chmod +x mvnw` inside the corresponding backend service folder.
+
+## Environment assumptions
+
+This project is prepared for local development and Docker-based orchestration. For production, additional security hardening, environment variables, and deployment policies should be added.

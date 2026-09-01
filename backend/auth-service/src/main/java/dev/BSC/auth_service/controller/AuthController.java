@@ -19,12 +19,12 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("register")
     public ResponseEntity<User> register(@RequestBody User user) {
         return ResponseEntity.ok(authService.register(user.getUsername(), user.getPassword(), user.getRole()));
     }
 
-    @PostMapping("/login")
+    @PostMapping("login")
     public ResponseEntity<dev.BSC.auth_service.dto.AuthResponse> login(
             @RequestBody dev.BSC.auth_service.dto.LoginRequest request) {
         return ResponseEntity.ok(authService.login(request.getUsername(), request.getPassword()));

@@ -1,0 +1,14 @@
+info:
+  name: Delete_Cartitem_User
+  type: http
+
+http:
+  method: DELETE
+  url: http://localhost:8080/api/cart/2/items/3
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

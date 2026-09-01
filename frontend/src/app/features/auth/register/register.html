@@ -1,0 +1,109 @@
+<div class="min-h-screen grid lg:grid-cols-[1.1fr_1fr] bg-[#F5F6F8]">
+  <div
+    class="hidden lg:flex flex-col justify-between p-14 text-[#F5F6F8] bg-[#16323A] bg-[radial-gradient(circle_at_top_left,#1E4550_0%,#16323A_55%,#0F262C_100%)]"
+  >
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-md bg-[#E8A33D]"></div>
+      <span class="font-[Sora] text-lg tracking-tight">Panel Interno</span>
+    </div>
+
+    <div class="max-w-md">
+      <h1 class="font-[Sora] text-4xl leading-tight mb-5">Crea tu cuenta en un minuto</h1>
+      <p class="text-[#B9CBCE] text-base leading-relaxed">
+        Tu cuenta se crea con el rol de usuario por defecto. Un administrador puede cambiar tu rol
+        despues si necesitas acceso de supervisor o proveedor.
+      </p>
+    </div>
+
+    <div class="text-sm text-[#8FA6A9]">Ya tienes cuenta? Inicia sesion desde el otro panel.</div>
+  </div>
+
+  <div class="flex items-center justify-center p-6 sm:p-10">
+    <div class="w-full max-w-sm">
+      <h2 class="font-[Sora] text-2xl text-[#171B21] mb-1">Crear cuenta</h2>
+      <p class="text-sm text-[#5B6570] mb-8">Completa tus datos para registrarte.</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4" novalidate>
+        <div>
+          <label for="username" class="block text-sm text-[#3A424B] mb-1.5"
+            >username completo</label
+          >
+          <input
+            id="username"
+            type="text"
+            formControlName="username"
+            placeholder="Ana Torres"
+            class="w-full rounded-lg border border-[#D9DEE3] bg-white px-3.5 py-2.5 text-[#171B21] placeholder:text-[#A6AEB6] focus:outline-none focus:ring-2 focus:ring-[#2F5D62]/40 focus:border-[#2F5D62]"
+          />
+          @if (form.get('username')?.invalid && form.get('username')?.touched) {
+            <p class="text-xs text-[#C0392B] mt-1">Ingresa tu username.</p>
+          }
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="password" class="block text-sm text-[#3A424B] mb-1.5">Contrasena</label>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="••••••••"
+              class="w-full rounded-lg border border-[#D9DEE3] bg-white px-3.5 py-2.5 text-[#171B21] placeholder:text-[#A6AEB6] focus:outline-none focus:ring-2 focus:ring-[#2F5D62]/40 focus:border-[#2F5D62]"
+            />
+          </div>
+
+          <div>
+            <label for="confirmPassword" class="block text-sm text-[#3A424B] mb-1.5"
+              >Confirmar</label
+            >
+            <input
+              id="confirmPassword"
+              type="password"
+              formControlName="confirmPassword"
+              placeholder="••••••••"
+              class="w-full rounded-lg border border-[#D9DEE3] bg-white px-3.5 py-2.5 text-[#171B21] placeholder:text-[#A6AEB6] focus:outline-none focus:ring-2 focus:ring-[#2F5D62]/40 focus:border-[#2F5D62]"
+            />
+          </div>
+
+          <div>
+            <label for="role" class="block text-sm text-[#3A424B] mb-1.5">Rol</label>
+            <select
+              id="role"
+              formControlName="role"
+              class="w-full rounded-lg border border-[#D9DEE3] bg-white px-3.5 py-2.5 text-[#171B21] focus:outline-none focus:ring-2 focus:ring-[#2F5D62]/40 focus:border-[#2F5D62]"
+            >
+              <option value="USER">Usuario</option>
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="ADMIN">Administrador</option>
+              <option value="PROVEEDOR">Proveedor</option>
+            </select>
+          </div>
+        </div>
+        @if (form.errors?.['mismatch'] && form.get('confirmPassword')?.touched) {
+          <p class="text-xs text-[#C0392B] -mt-2">Las contrasenas no coinciden.</p>
+        }
+
+        @if (errorMsg()) {
+          <div
+            class="rounded-lg bg-[#FBEAE8] border border-[#F1C6C0] text-[#96281B] text-sm px-3.5 py-2.5"
+          >
+            {{ errorMsg() }}
+          </div>
+        }
+
+        <button
+          type="submit"
+          [disabled]="loading()"
+          class="w-full rounded-lg bg-[#2F5D62] text-white py-2.5 font-medium hover:bg-[#274F53] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {{ loading() ? 'Creando cuenta...' : 'Crear cuenta' }}
+        </button>
+      </form>
+
+      <p class="text-sm text-[#5B6570] mt-6 text-center">
+        Ya tienes cuenta?
+        <a routerLink="/login" class="text-[#2F5D62] font-medium hover:underline">Inicia sesion</a>
+      </p>
+    </div>
+  </div>
+</div>

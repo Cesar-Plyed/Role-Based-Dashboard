@@ -1,0 +1,15 @@
+info:
+  name: Get_Eureka
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:8761/
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

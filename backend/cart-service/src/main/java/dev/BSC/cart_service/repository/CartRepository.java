@@ -23,18 +23,28 @@ import java.util.Optional;
  */
 @Repository
 public interface CartRepository extends JpaRepository<CartItem, Long> {
-    
+
     /**
      * Busca un item del carrito por el ID del producto
+     * 
      * @param productId ID del producto
      * @return Optional con el item si existe
      */
     Optional<CartItem> findByProductId(Long productId);
-    
+
     /**
      * Obtiene todos los items relacionados con un producto
+     * 
      * @param productId ID del producto
      * @return Lista de items con ese producto
      */
     List<CartItem> findByProductIdIn(List<Long> productIds);
+
+    /**
+     * Obtiene todos los items relacionados con un usuario
+     * 
+     * @param userId ID del usuario
+     * @return Lista de items con ese usuario en relacion
+     */
+    List<CartItem> findByUserId(Long userId);
 }
